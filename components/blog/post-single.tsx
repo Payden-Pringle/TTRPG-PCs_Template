@@ -48,7 +48,7 @@ function PostSingle({
                   {(author || date) && (
                     <>
                       <PostMeta author={author} date={date}/>
-                      <hr className="w-16 h-px pt-px bg-gray-200 border-0 my-6" />
+                      <hr className="w-16 h-px pt-px bg-dark-border border-0 my-6" />
                     </>
                   )}
 
