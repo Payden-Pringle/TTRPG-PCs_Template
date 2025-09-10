@@ -19,7 +19,7 @@
 .internal-link {
   @apply rounded;
   color: #58a6ff;
-  background-color: #4a5568 !important;
+  background-color: transparent !important;
 }
 
 /* Typography */
