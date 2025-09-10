@@ -2,4 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
-@import 'additional-styles/utils.css'
+@import 'additional-styles/utils.css';
+
+/* Dark theme base styles */
+body {
+  @apply bg-dark-bg text-dark-text;
+}

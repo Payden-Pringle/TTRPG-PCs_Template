@@ -16,8 +16,8 @@
 }
 .internal-link {
   @apply rounded;
-  color: #0969da;
-  background-color: rgb(243 250 251) !important;
+  color: #58a6ff;
+  background-color: rgb(30 30 30) !important;
 }
 
 /* Typography */
