@@ -58,7 +58,6 @@ function PostSingle({
                 </div>
 
                 {/* Sidebar */}
-                <hr className="my-10 border border-dashed lg:block"/>
                 <aside className="relative lg:block lg:w-72 lg:ml-20 shrink-0">
                   <div>
                     <h4 className="text-lg font-bold leading-snug tracking-tight mb-4">Backlinks</h4>
