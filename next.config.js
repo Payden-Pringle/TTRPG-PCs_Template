@@ -1,11 +1,11 @@
 module.exports = {
+  async rewrites() {
+    return [{ source: '/', destination: '/home' }]
+  },
   async redirects() {
     return [
-      {
-        source: '/',
-        destination: '/home',
-        permanent: true,
-      },
+      { source: '/about-me', destination: '/ttrpgs/about-me', permanent: true },
+      { source: '/session-0', destination: '/ttrpgs/session-0', permanent: true },
     ]
   },
 }

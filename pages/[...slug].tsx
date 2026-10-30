@@ -40,7 +40,7 @@ export default function Post({ post, backlinks, notes }: Props) {
               description,
               type: 'article',
               images: [{
-                url: (post.ogImage?.url) ? post.ogImage.url : "https://paydenkp-pcs.vercel.app/favicon/android-chrome-512x512.png",
+                url: (post.ogImage?.url) ? post.ogImage.url : "https://paydenkp.vercel.app/favicon/android-chrome-512x512.png",
                 width: (post.ogImage?.url) ? null: 512,
                 height: (post.ogImage?.url) ? null: 512,
                 type: null
@@ -89,7 +89,15 @@ export async function getStaticProps({ params }: Params) {
     return [slug, post]
   })));
 
-  const notes = slug === 'home' ? getAllPosts(['slug', 'title', 'excerpt']).filter(note => note.slug !== 'home') : []
+  const normalizedSlug = slug.split(path.sep).join('/')
+  const notes = normalizedSlug === 'home' || normalizedSlug === 'ttrpgs'
+    ? getAllPosts(['slug', 'title', 'excerpt']).filter(note => {
+        const noteSlug = note.slug.split(path.sep).join('/')
+        return normalizedSlug === 'ttrpgs'
+          ? noteSlug.startsWith('ttrpgs/')
+          : noteSlug !== 'home' && noteSlug !== 'ttrpgs' && !noteSlug.startsWith('ttrpgs/')
+      })
+    : []
 
   return {
     props: {
