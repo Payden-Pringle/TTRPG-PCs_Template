@@ -34,14 +34,13 @@ export default function PostSingle({ title, date, author, content, excerpt, slug
               {isHome && portraitUrl ? (
                 <div className="hero-art hero-portrait">
                   <div className="portrait-frame"><img src={portraitUrl} alt="Portrait of Payden Pringle" width="1144" height="1144" /></div>
-                  <div className="art-caption" aria-hidden="true"><span>WORK &amp; INTERESTS</span><span>✦</span><span>PAYDEN K. PRINGLE</span></div>
                 </div>
               ) : (
                 <div className="hero-art" aria-hidden="true">
                   <div className="orbit orbit-one" /><div className="orbit orbit-two" />
                   <span className="art-spark spark-one">✦</span><span className="art-spark spark-two">✧</span>
                   {isTtrpgLanding ? <svg viewBox="0 0 240 260" fill="none"><path d="M120 16 218 72v112l-98 58-98-58V72L120 16Z"/><path d="M120 16 65 104l55 138 55-138-55-88ZM22 72l43 32 110 0 43-32M22 184l98 58 98-58M65 104 22 184m153-80 43 80M120 16l98 56M120 16 22 72"/><circle cx="120" cy="134" r="4"/></svg> : <div className="personal-monogram">P<span>✦</span></div>}
-                  <div className="art-caption"><span>{isHome ? 'WORK & INTERESTS' : 'STORIES WORTH KEEPING'}</span><span>✦</span><span>{isHome ? 'PAYDEN K. PRINGLE' : 'EST. AT THE TABLE'}</span></div>
+                  {isTtrpgLanding && <div className="art-caption"><span>STORIES WORTH KEEPING</span><span>✦</span><span>EST. AT THE TABLE</span></div>}
                 </div>
               )}
             </section>
