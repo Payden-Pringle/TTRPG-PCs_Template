@@ -1,31 +1,13 @@
-import PreviewLink from "./preview-link"
+import Link from 'next/link'
 
-const Footer = () => {
+export default function Footer() {
   return (
-    <footer className="bg-dark-bg border-t border-dark-border">
-      <div className="container mx-auto px-5">
-        <div className="py-3 flex flex-col lg:flex-row items-center">
-          <h3 className="text-4xl lg:text-[2.5rem] font-bold tracking-tighter leading-tight text-center lg:text-left mb-10 lg:mb-0 lg:pr-4 lg:w-1/2">
-            Statically Generated with Next.js.
-          </h3>
-          <div className="flex flex-col lg:flex-row justify-center items-center lg:pl-4 lg:w-1/2">
-            <a
-              href="#"
-              className="mx-3 bg-dark-text hover:bg-dark-bg hover:text-dark-text border border-dark-text text-dark-bg font-bold py-3 px-12 lg:px-8 duration-200 transition-colors mb-6 lg:mb-0"
-            >
-              Read Documentation
-            </a>
-            <a
-              href={`https://github.com/matthewwong525/linked-blog-starter`}
-              className="mx-3 font-bold hover:underline"
-            >
-              View on GitHub
-            </a>
-          </div>
-        </div>
+    <footer className="site-footer">
+      <div className="footer-inner">
+        <div><div className="footer-title"><span aria-hidden="true">✦</span> Payden’s TTRPG Archive</div><p>Stories, characters, and the worlds around them.</p></div>
+        <Link href="/" className="footer-home">Back to the beginning <span aria-hidden="true">↗</span></Link>
       </div>
+      <div className="footer-bottom"><span>A collection by Payden Pringle</span><span>MADE FOR THE STORIES WE TELL</span></div>
     </footer>
   )
 }
-
-export default Footer

@@ -1,28 +1,10 @@
-import Link from "next/link"
-import NotePreview from "./note-preview"
+import Link from 'next/link'
 
-type Props = {
-  backlinks: {
-    [k: string]: {
-      title: string
-      excerpt: string
-    }
-  }
+type Props = { backlinks: { [slug: string]: { title: string, excerpt: string } } }
+export default function Backlinks({ backlinks }: Props) {
+  return <div className="related-list">{Object.keys(backlinks).map((slug) => (
+    <Link key={slug} href={'/' + slug.split(/[\\/]/).map(encodeURIComponent).join('/')} className="related-link">
+      <span>{backlinks[slug].title}</span><span aria-hidden="true">↗</span>
+    </Link>
+  ))}</div>
 }
-
-const Backlinks = ({ backlinks }: Props) => {
-  return (
-    <>
-      {Object.keys(backlinks).map((slug) => {
-        const post = backlinks[slug]
-        return (
-          <Link as={slug} href="[...slug]" className="col-span-1">
-            <NotePreview title={post.title} content={post.excerpt} />
-          </Link>
-        )
-      })}
-    </>
-  )
-}
-
-export default Backlinks

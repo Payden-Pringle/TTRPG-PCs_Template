@@ -17,9 +17,10 @@ type Props = {
   post: PostType
   slug: string
   backlinks: { [k: string]: Items }
+  notes: { slug: string, title: string, excerpt: string }[]
 }
 
-export default function Post({ post, backlinks }: Props) {
+export default function Post({ post, backlinks, notes }: Props) {
   const router = useRouter()
   const description = post.excerpt.slice(0, 155)
   if (!router.isFallback && !post?.slug) {
@@ -39,7 +40,7 @@ export default function Post({ post, backlinks }: Props) {
               description,
               type: 'article',
               images: [{
-                url: (post.ogImage?.url) ? post.ogImage.url : "https://fleetingnotes.app/favicon/512.png",
+                url: (post.ogImage?.url) ? post.ogImage.url : "https://paydenkp-pcs.vercel.app/favicon/android-chrome-512x512.png",
                 width: (post.ogImage?.url) ? null: 512,
                 height: (post.ogImage?.url) ? null: 512,
                 type: null
@@ -48,6 +49,9 @@ export default function Post({ post, backlinks }: Props) {
           />
           <PostSingle
             title={post.title}
+            slug={post.slug}
+            excerpt={post.excerpt}
+            notes={notes}
             content={post.content}
             date={post.date}
             author={post.author}
@@ -85,8 +89,11 @@ export async function getStaticProps({ params }: Params) {
     return [slug, post]
   })));
 
+  const notes = slug === 'home' ? getAllPosts(['slug', 'title', 'excerpt']).filter(note => note.slug !== 'home') : []
+
   return {
     props: {
+      notes,
       post: {
         ...post,
         content,
