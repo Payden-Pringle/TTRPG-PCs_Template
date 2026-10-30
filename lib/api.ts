@@ -71,7 +71,10 @@ export function getAllPosts(fields: string[] = []) {
   return posts
 }
 
+let cachedLinksMapping: Map<string, string[]> | null = null
+
 export function getLinksMapping() {
+  if (process.env.NODE_ENV === 'production' && cachedLinksMapping) return cachedLinksMapping
   const linksMapping = new Map<string, string[]>();
   const postsMapping = new Map((getAllPosts(['slug', 'content'])).map(i => [i.slug, i.content]));
   const allSlugs = new Set(postsMapping.keys());
@@ -87,6 +90,7 @@ export function getLinksMapping() {
     }
     linksMapping[slug] = linkSlugs
   });
+  if (process.env.NODE_ENV === 'production') cachedLinksMapping = linksMapping
   return linksMapping;
 }
 

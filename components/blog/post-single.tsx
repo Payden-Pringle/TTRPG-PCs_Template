@@ -3,20 +3,23 @@ import Author from '../../interfaces/author'
 import Backlinks from '../misc/backlinks'
 import PostBody from './post-body'
 import PostMeta from './post-meta'
+import CharacterIndex from '../characters/character-index'
 
 type ArchiveNote = { slug: string, title: string, excerpt: string }
 type Props = {
   title: string, content: string, excerpt: string, slug: string,
-  date?: string, author?: Author, notes: ArchiveNote[], portraitUrl: string | null,
+  date?: string, author?: Author, notes: ArchiveNote[], portraitUrl: string | null, characters: { slug: string, title: string }[],
   backlinks: { [k: string]: { title: string, excerpt: string } }
 }
 
-export default function PostSingle({ title, date, author, content, excerpt, slug, notes, backlinks, portraitUrl }: Props) {
+export default function PostSingle({ title, date, author, content, excerpt, slug, notes, backlinks, portraitUrl, characters }: Props) {
   const normalizedSlug = slug.replace(/\\/g, '/')
   const isHome = normalizedSlug === 'home'
   const isTtrpgLanding = normalizedSlug === 'ttrpgs'
   const isLanding = isHome || isTtrpgLanding
   const isTtrpgNote = normalizedSlug.startsWith('ttrpgs/')
+  const isCharacterIndex = normalizedSlug === 'ttrpgs/characters'
+  const isCharacter = normalizedSlug.startsWith('ttrpgs/characters/')
   const hasBacklinks = Object.keys(backlinks).length > 0
   return (
     <div className={isLanding ? 'page page-home' : 'page page-note'}>
@@ -57,10 +60,10 @@ export default function PostSingle({ title, date, author, content, excerpt, slug
           </>
         ) : (
           <article className="note-page">
-            <div className="note-breadcrumb"><Link href={isTtrpgNote ? '/ttrpgs' : '/'}>{isTtrpgNote ? 'TTRPG archive' : 'Home'}</Link><span aria-hidden="true">/</span><span>Note</span></div>
+            <div className="note-breadcrumb"><Link href={isTtrpgNote ? '/ttrpgs' : '/'}>{isTtrpgNote ? 'TTRPG archive' : 'Home'}</Link>{isCharacter && <><span aria-hidden="true">/</span><Link href="/ttrpgs/characters">Characters</Link></>}<span aria-hidden="true">/</span><span>{isCharacterIndex ? 'Characters' : 'Note'}</span></div>
             <header className="note-header"><div className="eyebrow"><span className="eyebrow-line" /> FROM THE ARCHIVE</div><h1 id="page-title">{title}</h1>{excerpt && <p>{excerpt}</p>}{(author || date) && <PostMeta author={author} date={date} />}</header>
             <div className={hasBacklinks ? 'note-layout with-sidebar' : 'note-layout'}>
-              <div className="note-content"><PostBody content={content} /></div>
+              <div className="note-content"><PostBody content={content} />{isCharacterIndex && <CharacterIndex characters={characters} />}</div>
               {hasBacklinks && <aside className="related-notes"><div className="eyebrow">KEEP EXPLORING</div><h2>Connected notes</h2><p>Other pages that link here.</p><Backlinks backlinks={backlinks} /></aside>}
             </div>
           </article>

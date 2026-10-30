@@ -20,9 +20,10 @@ type Props = {
   backlinks: { [k: string]: Items }
   notes: { slug: string, title: string, excerpt: string }[]
   portraitUrl: string | null
+  characters: { slug: string, title: string }[]
 }
 
-export default function Post({ post, backlinks, notes, portraitUrl }: Props) {
+export default function Post({ post, backlinks, notes, portraitUrl, characters }: Props) {
   const router = useRouter()
   const description = post.excerpt.slice(0, 155)
   if (!router.isFallback && !post?.slug) {
@@ -54,6 +55,7 @@ export default function Post({ post, backlinks, notes, portraitUrl }: Props) {
             slug={post.slug}
             excerpt={post.excerpt}
             notes={notes}
+            characters={characters}
             portraitUrl={portraitUrl}
             content={post.content}
             date={post.date}
@@ -98,14 +100,20 @@ export async function getStaticProps({ params }: Params) {
     ? getAllPosts(['slug', 'title', 'excerpt']).filter(note => {
         const noteSlug = note.slug.split(path.sep).join('/')
         return normalizedSlug === 'ttrpgs'
-          ? noteSlug.startsWith('ttrpgs/')
+          ? noteSlug.startsWith('ttrpgs/') && !noteSlug.startsWith('ttrpgs/characters/')
           : noteSlug !== 'home' && noteSlug !== 'ttrpgs' && !noteSlug.startsWith('ttrpgs/')
       })
+    : []
+  const characters = normalizedSlug === 'ttrpgs/characters'
+    ? getAllPosts(['slug', 'title'])
+        .filter(note => note.slug.split(path.sep).join('/').startsWith('ttrpgs/characters/'))
+        .sort((a, b) => a.title.localeCompare(b.title, 'en', { sensitivity: 'base' }))
     : []
 
   return {
     props: {
       notes,
+      characters,
       portraitUrl: normalizedSlug === 'home' ? getPortraitUrl(post.portrait) : null,
       post: {
         ...post,
