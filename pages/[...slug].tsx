@@ -1,6 +1,6 @@
 import { useRouter } from 'next/router'
 import ErrorPage from 'next/error'
-import { getPostBySlug, getAllPosts, getLinksMapping } from '../lib/api'
+import { getPostBySlug, getAllPosts, getLinksMapping, getPortraitUrl } from '../lib/api'
 import { markdownToHtml } from '../lib/markdownToHtml'
 import type PostType from '../interfaces/post'
 import path from 'path'
@@ -18,9 +18,10 @@ type Props = {
   slug: string
   backlinks: { [k: string]: Items }
   notes: { slug: string, title: string, excerpt: string }[]
+  portraitUrl: string | null
 }
 
-export default function Post({ post, backlinks, notes }: Props) {
+export default function Post({ post, backlinks, notes, portraitUrl }: Props) {
   const router = useRouter()
   const description = post.excerpt.slice(0, 155)
   if (!router.isFallback && !post?.slug) {
@@ -52,6 +53,7 @@ export default function Post({ post, backlinks, notes }: Props) {
             slug={post.slug}
             excerpt={post.excerpt}
             notes={notes}
+            portraitUrl={portraitUrl}
             content={post.content}
             date={post.date}
             author={post.author}
@@ -80,6 +82,7 @@ export async function getStaticProps({ params }: Params) {
     'author',
     'content',
     'ogImage',
+    'portrait',
   ])
   const content = await markdownToHtml(post.content || '', slug)
   const linkMapping = await getLinksMapping()
@@ -102,6 +105,7 @@ export async function getStaticProps({ params }: Params) {
   return {
     props: {
       notes,
+      portraitUrl: normalizedSlug === 'home' ? getPortraitUrl(post.portrait) : null,
       post: {
         ...post,
         content,

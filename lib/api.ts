@@ -6,6 +6,17 @@ import { getMDExcerpt } from './markdownToHtml'
 
 const mdDir = path.join(process.cwd(), process.env.COMMON_MD_DIR)
 
+// Resolve a vault-relative image to its copied public asset, or leave the portrait unset.
+export function getPortraitUrl(portrait: unknown): string | null {
+  if (typeof portrait !== 'string' || !/\.(?:jpe?g|png|webp|avif)$/i.test(portrait)) return null
+  const imagePath = path.resolve(mdDir, portrait)
+  const relativePath = path.relative(mdDir, imagePath)
+  if (!relativePath || relativePath === '..' || relativePath.startsWith('..' + path.sep) || path.isAbsolute(relativePath)) return null
+  if (!fs.existsSync(imagePath) || !fs.statSync(imagePath).isFile()) return null
+  const assetDir = path.relative(path.resolve('public'), path.resolve(process.env.MD_ASSET_DIR))
+  return '/' + [...assetDir.split(path.sep), ...relativePath.split(path.sep)].map(encodeURIComponent).join('/')
+}
+
 export function getPostBySlug(slug: string, fields: string[] = []) {
   const realSlug = slug.replace(/\.md(?:#[^\)]*)?$/, '')
   const fullPath = path.join(mdDir, `${realSlug}.md`)
