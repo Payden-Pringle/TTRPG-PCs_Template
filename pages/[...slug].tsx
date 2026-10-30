@@ -2,6 +2,7 @@ import { useRouter } from 'next/router'
 import ErrorPage from 'next/error'
 import { getPostBySlug, getAllPosts, getLinksMapping, getPortraitUrl } from '../lib/api'
 import { markdownToHtml } from '../lib/markdownToHtml'
+import { isTtrpgSlug } from '../lib/sections'
 import type PostType from '../interfaces/post'
 import path from 'path'
 import PostSingle from '../components/blog/post-single'
@@ -74,6 +75,7 @@ type Params = {
 
 export async function getStaticProps({ params }: Params) {
   const slug = path.join(...params.slug)
+  const normalizedSlug = slug.split(path.sep).join('/')
   const post = await getPostBySlug(slug, [
     'title',
     'excerpt',
@@ -86,13 +88,12 @@ export async function getStaticProps({ params }: Params) {
   ])
   const content = await markdownToHtml(post.content || '', slug)
   const linkMapping = await getLinksMapping()
-  const backlinks = Object.keys(linkMapping).filter(k => linkMapping[k].includes(post.slug) && k !== post.slug)
+  const backlinks = Object.keys(linkMapping).filter(k => linkMapping[k].includes(post.slug) && k !== post.slug && (isTtrpgSlug(normalizedSlug) || !isTtrpgSlug(k)))
   const backlinkNodes = Object.fromEntries(await Promise.all(backlinks.map(async (slug) => {
     const post = await getPostBySlug(slug, ['title', 'excerpt']);
     return [slug, post]
   })));
 
-  const normalizedSlug = slug.split(path.sep).join('/')
   const notes = normalizedSlug === 'home' || normalizedSlug === 'ttrpgs'
     ? getAllPosts(['slug', 'title', 'excerpt']).filter(note => {
         const noteSlug = note.slug.split(path.sep).join('/')

@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
+import { isTtrpgSlug } from '../../lib/sections'
 
 type Result = { item: { slug: string, title: string, excerpt: string } }
 export default function Search({ visible, setVisible }: { visible: boolean, setVisible: (value: boolean) => void }) {
   const router = useRouter()
+  const section = isTtrpgSlug(router.asPath.split(/[?#]/)[0]) ? 'ttrpg' : 'professional'
   const inputRef = useRef<HTMLInputElement>(null)
   const [query, setQuery] = useState('')
   const [results, setResults] = useState<Result[]>([])
@@ -23,13 +25,13 @@ export default function Search({ visible, setVisible }: { visible: boolean, setV
     if (!visible || !query.trim()) { setResults([]); setFailed(false); return }
     const controller = new AbortController()
     const timer = setTimeout(() => {
-      fetch('/api/search?q=' + encodeURIComponent(query), { signal: controller.signal })
+      fetch('/api/search?section=' + section + '&q=' + encodeURIComponent(query), { signal: controller.signal })
         .then(response => { if (!response.ok) throw new Error('Search failed'); return response.json() })
         .then(data => { setResults(data); setFailed(false) })
         .catch(error => { if (error.name !== 'AbortError') { setResults([]); setFailed(true) } })
     }, 150)
     return () => { clearTimeout(timer); controller.abort() }
-  }, [query, visible])
+  }, [query, visible, section])
   if (!visible) return null
   return (
     <div className="search-overlay" onMouseDown={() => setVisible(false)}>

@@ -2,6 +2,7 @@ import { Searcher } from 'fast-fuzzy';
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { getAllPosts  } from '../../../lib/api'
 import { getMDExcerpt } from '../../../lib/markdownToHtml';
+import { isTtrpgSlug } from '../../../lib/sections';
 
 const allPosts = getAllPosts([
   "slug", "title", "content", "author", "date"
@@ -18,14 +19,14 @@ const searchIndex = allPosts.map((p) => {
 const searcher = new Searcher(searchIndex, {keySelector: (obj) => `${obj.title}\n${obj.excerpt}`})
 
 export default function postHandler(req: NextApiRequest, res: NextApiResponse) {
-  const {
-    query: { q },
-    method,
-  } = req
-  if (method != 'GET') {
+  if (req.method !== 'GET') {
     res.setHeader('Allow', ['GET'])
-    res.status(405).send(`Method ${method} Not Allowed`)
+    return res.status(405).send(`Method ${req.method} Not Allowed`)
   }
-  let searchedPosts = searcher.search(q.toString(), { returnMatchData: true });
-  res.status(200).json(searchedPosts.slice(0, 10))
+  const query = typeof req.query.q === 'string' ? req.query.q.trim() : ''
+  if (!query) return res.status(200).json([])
+  const ttrpgSection = req.query.section === 'ttrpg'
+  const searchedPosts = searcher.search(query, { returnMatchData: true })
+    .filter(({ item }) => isTtrpgSlug(item.slug) === ttrpgSection)
+  return res.status(200).json(searchedPosts.slice(0, 10))
 }
