@@ -13,7 +13,7 @@ import NotePreview from '../components/misc/note-preview'
 import { fromHtml } from 'hast-util-from-html'
 
 
-export async function markdownToHtml(markdown: string, currSlug: string) {
+export async function markdownToHtml(markdown: string, currSlug: string, collapsibleSections = false) {
   markdown = updateMarkdownLinks(markdown, currSlug);
 
   // get mapping of current links
@@ -34,10 +34,37 @@ export async function markdownToHtml(markdown: string, currSlug: string) {
       selector: 'a',
       rewrite: async (node) => rewriteLinkNodes(node, linkNodeMapping, currSlug)
     })
+    .use(sectionDisclosures, collapsibleSections)
     .use(rehypeStringify)
     .process(markdown)
   let htmlStr = file.toString()
   return htmlStr;
+}
+
+
+// Optionally group each second-level section into a native, keyboard-accessible disclosure.
+function sectionDisclosures(enabled: boolean) {
+  return (tree: any) => {
+    if (!enabled) return
+    const result: any[] = []
+    let section: any = null
+    for (const node of tree.children) {
+      if (node.type === 'element' && node.tagName === 'h2') {
+        section = {
+          type: 'element',
+          tagName: 'details',
+          properties: { className: ['adventure-section'] },
+          children: [{ type: 'element', tagName: 'summary', properties: {}, children: [node] }],
+        }
+        result.push(section)
+      } else if (section) {
+        section.children.push(node)
+      } else {
+        result.push(node)
+      }
+    }
+    tree.children = result
+  }
 }
 
 export function getMDExcerpt(markdown: string, length: number = 500) {

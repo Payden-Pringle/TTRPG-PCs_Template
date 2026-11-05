@@ -89,8 +89,9 @@ export async function getStaticProps({ params }: Params) {
     'ogImage',
     'noindex',
     'portrait',
+    'collapsibleSections',
   ])
-  const content = await markdownToHtml(post.content || '', slug)
+  const content = await markdownToHtml(post.content || '', slug, String(post.collapsibleSections) === 'true')
   const linkMapping = await getLinksMapping()
   const backlinks = Object.keys(linkMapping).filter(k => linkMapping[k].includes(post.slug) && k !== post.slug && (isTtrpgSlug(normalizedSlug) || !isTtrpgSlug(k)))
   const backlinkNodes = Object.fromEntries(await Promise.all(backlinks.map(async (slug) => {
