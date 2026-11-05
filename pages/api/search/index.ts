@@ -5,9 +5,9 @@ import { getMDExcerpt } from '../../../lib/markdownToHtml';
 import { isTtrpgSlug } from '../../../lib/sections';
 
 const allPosts = getAllPosts([
-  "slug", "title", "content", "author", "date"
+  "slug", "title", "content", "author", "date", "excludeFromSearch"
 ]);
-const searchIndex = allPosts.map((p) => {
+const searchIndex = allPosts.filter((p) => !p.excludeFromSearch).map((p) => {
   return {
     slug: p.slug,
     title: p.title,

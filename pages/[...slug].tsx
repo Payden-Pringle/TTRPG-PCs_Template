@@ -38,6 +38,7 @@ export default function Post({ post, backlinks, notes, portraitUrl, characters }
           <NextSeo
             title={post.title}
             description={description}
+            noindex={post.noindex === true}
             openGraph={{
               title: post.title,
               description,
@@ -86,6 +87,7 @@ export async function getStaticProps({ params }: Params) {
     'author',
     'content',
     'ogImage',
+    'noindex',
     'portrait',
   ])
   const content = await markdownToHtml(post.content || '', slug)
@@ -97,7 +99,8 @@ export async function getStaticProps({ params }: Params) {
   })));
 
   const notes = normalizedSlug === 'home' || normalizedSlug === 'ttrpgs'
-    ? getAllPosts(['slug', 'title', 'excerpt']).filter(note => {
+    ? getAllPosts(['slug', 'title', 'excerpt', 'excludeFromSearch']).filter(note => {
+        if (note.excludeFromSearch) return false
         const noteSlug = note.slug.split(path.sep).join('/')
         return normalizedSlug === 'ttrpgs'
           ? noteSlug.startsWith('ttrpgs/') && !noteSlug.startsWith('ttrpgs/characters/')

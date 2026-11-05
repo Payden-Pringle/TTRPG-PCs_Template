@@ -8,6 +8,7 @@ type PostType = {
   date?: string
   portrait?: string
   author?: Author
+  noindex?: boolean
   ogImage?: {
     url: string
   }
