@@ -34,37 +34,20 @@ export async function markdownToHtml(markdown: string, currSlug: string, collaps
       selector: 'a',
       rewrite: async (node) => rewriteLinkNodes(node, linkNodeMapping, currSlug)
     })
-    .use(sectionDisclosures, { enabled: collapsibleSections })
     .use(rehypeStringify)
     .process(markdown)
   let htmlStr = file.toString()
-  return htmlStr;
+  return collapsibleSections ? sectionDisclosures(htmlStr) : htmlStr;
 }
 
 
-// Optionally group each second-level section into a native, keyboard-accessible disclosure.
-function sectionDisclosures(options: { enabled: boolean }) {
-  return (tree: any) => {
-    if (!options.enabled) return
-    const result: any[] = []
-    let section: any = null
-    for (const node of tree.children) {
-      if (node.type === 'element' && node.tagName === 'h2') {
-        section = {
-          type: 'element',
-          tagName: 'details',
-          properties: { className: ['adventure-section'] },
-          children: [{ type: 'element', tagName: 'summary', properties: {}, children: [node] }],
-        }
-        result.push(section)
-      } else if (section) {
-        section.children.push(node)
-      } else {
-        result.push(node)
-      }
-    }
-    tree.children = result
-  }
+// Wrap each rendered second-level section in a native disclosure.
+function sectionDisclosures(html: string) {
+  return html.replace(
+    /<h2([^>]*)>([\s\S]*?)<\/h2>([\s\S]*?)(?=<h2(?:\s|>)|$)/g,
+    (_match, attributes, heading, content) =>
+      `<details class="adventure-section"><summary><h2${attributes}>${heading}</h2></summary>${content}</details>`
+  )
 }
 
 export function getMDExcerpt(markdown: string, length: number = 500) {
