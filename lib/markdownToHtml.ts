@@ -34,7 +34,7 @@ export async function markdownToHtml(markdown: string, currSlug: string, collaps
       selector: 'a',
       rewrite: async (node) => rewriteLinkNodes(node, linkNodeMapping, currSlug)
     })
-    .use(sectionDisclosures, collapsibleSections)
+    .use(sectionDisclosures, { enabled: collapsibleSections })
     .use(rehypeStringify)
     .process(markdown)
   let htmlStr = file.toString()
@@ -43,9 +43,9 @@ export async function markdownToHtml(markdown: string, currSlug: string, collaps
 
 
 // Optionally group each second-level section into a native, keyboard-accessible disclosure.
-function sectionDisclosures(enabled: boolean) {
+function sectionDisclosures(options: { enabled: boolean }) {
   return (tree: any) => {
-    if (!enabled) return
+    if (!options.enabled) return
     const result: any[] = []
     let section: any = null
     for (const node of tree.children) {
